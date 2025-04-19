@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pricing - My SaaS App</title>
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
+    <script type="text/javascript">
+        Paddle.Environment.set("sandbox");
+        Paddle.Initialize({ 
+          token: "test_cb28e5ed8e647a8f536705822d2" // replace with a client-side token
+        });
+      </script>
+
+
+    <script>
+        // Replace YOUR_VENDOR_ID with your actual Paddle Vendor ID
+        
+
+        function openCheckout(itemlist) {
+            Paddle.Checkout.open({
+                item: itemlist,
+                settings: {
+                    displayMode: "overlay", // Use "inline" for inline checkout
+                    theme: "light",         // Optional: "light" or "dark"
+                    locale: "en"            // Optional: Set the locale
+                }
+            });
+        }
+        let itemsList = [
+    {
+      priceId: "pri_01js6jka9hfqfqr6bpf6xzwv35",
+      quantity: 1
+    }
+  ];
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        .plan {
+            border: 1px solid #ccc;
+            padding: 1.5rem;
+            margin: 1rem;
+            border-radius: 10px;
+            max-width: 300px;
+            text-align: center;
+        }
+        .btn {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Choose Your Plan</h1>
+
+    <div class="plan">
+        <h2>Basic Plan</h2>
+        <p>$9/month</p>
+        <button class="btn" onclick="openCheckout(itemsList)">Subscribe</button>
+    </div>
+
+    <div class="plan">
+        <h2>Pro Plan</h2>
+        <p>$29/month</p>
+        <button class="btn" onclick="openCheckout(itemsList)">Subscribe</button>
+    </div>
+</body>
+</html>

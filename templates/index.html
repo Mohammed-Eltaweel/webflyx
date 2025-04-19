@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Paddle Checkout</title>
+</head>
+<body>
+  <h1>Welcome to the Paddle SaaS App</h1>
+  <button id="buyBtn">Buy Now</button>
+
+  <script>
+    document.getElementById("buyBtn").onclick = async () => {
+      const res = await fetch("/create-checkout", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Error: " + JSON.stringify(data.error));
+      }
+    };
+  </script>
+</body>
+</html>

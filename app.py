@@ -1,41 +1,57 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, redirect, request, jsonify
+import requests
+import os
+
 app = Flask(__name__)
 
-users = []
-@app.route('/')
-def home():
-    return render_template('login.html')  # your HTML file goes here
+PADDLE_API_KEY = "5fd39c9ecba47509696dcc5da002b18713610d8832660f336b"
+PADDLE_ENV = "sandbox"  # change to "production" later
+PADDLE_API_URL = "https://sandbox-api.paddle.com" if PADDLE_ENV == "sandbox" else "https://api.paddle.com"
 
-@app.route('/signup', methods=["GET", 'POST'])
-def signup():
-    if request.method == 'POST': 
-         # Get form data
-        name = request.form.get('name')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm-password')
+# Route: Home Page
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-        # Simple check
-        if password != confirm_password:
-            return "Passwords do not match", 400
+# Route: Create Checkout Link
+@app.route("/create-checkout", methods=["POST"])
+def create_checkout():
+    headers = {
+        "Authorization": f"Bearer {PADDLE_API_KEY}",
+        "Content-Type": "application/json"
+    }
 
-        # Save user (in memory)
-        users.append({
-            'name': name,
-            'email': email,
-            'password': password,  # Don't store plain passwords in real apps
-        })
+    data = {
+        "items": [{"price_id": "pri_01js6jka9hfqfqr6bpf6xzwv35", "quantity": 1}],
+        "customer": {
+            "email": "testuser@example.com"
+        },
+        "redirect_url": "http://localhost:5000/thank-you"
+    }
 
-        print("Users:", users)  # For debugging
+    response = requests.post(f"{PADDLE_API_URL}/v1/checkouts", headers=headers, json=data)
 
-        return f"Thanks for signing up, {name}!"
-    return render_template('signup.html')  # your HTML file goes here
+    if response.status_code == 201:
+        checkout_url = response.json()["data"]["url"]
+        
+        return jsonify({"url": checkout_url})
+    else:
+        
+        return jsonify({"error": response.json()}), 400
 
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    if request.method == 'POST':
-        return 'login successfuly', 200
-    return render_template('login.html')  # your HTML file goes here
+# Route: Thank You Page
+@app.route("/thank-you")
+def thank_you():
+    return "<h1>Payment Successful!</h1>"
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Webhook for Subscription Events
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    event = request.json
+    print("Received Paddle Webhook:", event)
+    # TODO: Verify webhook signature here
+    # TODO: Activate user subscription in your DB
+    return jsonify({"success": True})
+
+if __name__ == "__main__":
+    app.run(port=5000)

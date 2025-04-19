@@ -1,0 +1,11 @@
+<script src="https://cdn.paddle.com/paddle/paddle.js"></script>
+<script type="text/javascript">
+  Paddle.Setup({ vendor: 123456 }); // Replace with your real Vendor ID
+
+  Paddle.Checkout.open({
+    product: {{ product_id }},
+    email: 'test@example.com'  // Optional pre-filled email
+  });
+</script>
+
+<p class="text-gray-600">Loading Paddle Checkout...</p>
